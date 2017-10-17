@@ -27,9 +27,14 @@ from bs4 import BeautifulSoup
 ## find_urls("the internet is awesome #worldwideweb") should return [], empty list
 
 def find_urls(s):
-    pass
-    #Your code here
-
+    urls = re.findall('http[s]*://[a-z0-9]+[.][\S]+', s)
+    # for url in urls:
+        # url_text = str(url)
+    if len(urls) != 0:
+        return urls
+    else:
+       return ([])
+       
 
 
 ## PART 2  - Define a function grab_headlines.
