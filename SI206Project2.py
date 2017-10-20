@@ -41,13 +41,13 @@ def find_urls(s):
 ## http://www.michigandaily.com/section/opinion
 
 def grab_headlines():
-    mostreadheadlines = []
-    daily = requests.get('http://www.michigandaily.com/section/opinion')
-    bsoup = BeautifulSoup(daily.content, 'html.parser')
-    popular = bsoup.ol('li')
-    for item in popular:
-        mostreadheadlines.append(item.string)
-    return mostreadheadlines
+    mostreadheadlines = [] #empty list created
+    daily = requests.get('http://www.michigandaily.com/section/opinion') #accessing michigan daily website
+    bsoup = BeautifulSoup(daily.content, 'html.parser') #using beautifulsoup parser
+    popular = bsoup.ol('li') #accessing the part of beautiful soup that shows the most read headlines
+    for item in popular: #iterating through the soup
+        mostreadheadlines.append(item.string) #adding the headlines to the empty list
+    return mostreadheadlines #returns the list of headlines
 
 
 
@@ -64,29 +64,34 @@ def grab_headlines():
 ## requests.get(base_url, headers={'User-Agent': 'SI_CLASS'})
 
 def get_umsi_data():
-    umsi_titles = {}
-    base_umsiurl = 'https://www.si.umich.edu/directory?field_person_firstname_value=&field_person_lastname_value=&rid=All'
-    website= requests.get(base_umsiurl, headers={'User-Agent': 'SI_CLASS'})
-    soup = BeautifulSoup(website.content, 'html.parser')
-    x = soup.body.div.div('div', {'class' : 'field-item even'})
-    for item in x:
-        if item('h2') != None:
-            print (item.name)
-
-
-    
+    base_umsiurl = 'https://www.si.umich.edu/directory?field_person_firstname_value=&field_person_lastname_value=&rid=All' #providing base url
+    umsi_titles = {} #empty dictionary created
+    def peopledict(dic, url):
+        website= requests.get(base_umsiurl, headers={'User-Agent': 'SI_CLASS'}) #getting the url information
+        soup = BeautifulSoup(website.content, 'html.parser') #using beautifulsoup parser
+        for item in soup: #iterating through the variable x
+            name = soup.body.div.div.findAll('h2') # ('div', {'class' : 'field-item even'}) #searching through the soup for the name
+            jobtitle = soup.div.div.findAll('div', {'class': 'field-name-field-person-titles'})
+            for item in name:
+                if item.get('class')==None and item.get('id')==None:
+                    names = item.string
+            for item in jobtitle:
+                job = item.div.string
+        umsi_titles.update(dict(zip(names, job)))
+    for page in range(13):
+        peopledict(umsi_titles, base_umsiurl+str(page))
+    return umsi_titles
 
 
 ## PART 3 (b) Define a function called num_students.
 ## INPUT: The dictionary from get_umsi_data().
 ## OUTPUT: Return number of PhD students in the data.  (Don't forget, I may change the input data)
 def num_students(data):
-    # PhDstudents= 0
-    # for student in data:
-    #     if 'PhD' in data[person]:
-    #         PhDstudents+= 1
-    # return PhDstudents
-    pass
+    PhDstudents= 0
+    for student in data:
+        if 'PhD' in data[student]:
+            PhDstudents+= 1
+    return PhDstudents
 
 
 
