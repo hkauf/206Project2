@@ -26,11 +26,11 @@ from bs4 import BeautifulSoup
 
 ## TODO finish
 def find_urls(s):
-    urls = re.findall('http[s]?://[a-z0-9]+[.].[\S]+',s)
-    if len(urls) != 0:
-        return urls
+    urls = re.findall('http[s]?://[a-z0-9]+[.].[\S]+',s) #checks for http or https, letters and numbers in url, no white space, and .com
+    if len(urls) != 0: #making sure the url is not empty
+        return urls #if there is a proper url it returns
     else:
-        return ([])
+        return ([]) #if there is no url or not a proper url in the string it returns an empty list
 
 
 
@@ -40,13 +40,13 @@ def find_urls(s):
 ## Grab the headlines from the Most Read section of http://www.michigandaily.com/section/opinion
 
 def grab_headlines():
-    mostreadheadlines = []
-    daily = requests.get('http://www.michigandaily.com/section/opinion')
-    bsoup = BeautifulSoup(daily.content, 'html.parser')
-    popular = bsoup.ol('li')
-    for item in popular:
-        mostreadheadlines.append(item.string)
-    return mostreadheadlines
+    mostreadheadlines = [] #empty list created
+    daily = requests.get('http://www.michigandaily.com/section/opinion') #accessing michigan daily website
+    bsoup = BeautifulSoup(daily.content, 'html.parser') #using beautifulsoup parser
+    popular = bsoup.ol('li') #accessing the part of beautifulsoup that shows the most read headlines on the site
+    for item in popular: #iterating through the soup
+        mostreadheadlines.append(item.string) #adding the headlines to the empty list
+    return mostreadheadlines #returns the list of headlines
 
 
 
@@ -64,33 +64,33 @@ def grab_headlines():
 
 
 def get_umsi_data():
-    base_umsi_url = 'https://www.si.umich.edu/directory?field_person_firstname_value=&field_person_lastname_value=&rid=All&page='
-    umsi_titles = {}
+    base_umsi_url = 'https://www.si.umich.edu/directory?field_person_firstname_value=&field_person_lastname_value=&rid=All&page=' #providing base url
+    umsi_titles = {} #empty dictionary created
     
     def peopledict(dic, url):
-        website = requests.get(url, headers={'User-Agent': 'SI_CLASS'})
-        soup = BeautifulSoup(website.text, 'html.parser')
+        website = requests.get(url, headers={'User-Agent': 'SI_CLASS'}) #getting the url information
+        soup = BeautifulSoup(website.text, 'html.parser') #using beautifulsoup parser
         
-        for item in soup:
-            name = soup.div.div.findAll('h2', {'class': None, 'id': None})
-            jobtitle = soup.div.div.findAll('div', {'class': 'field-name-field-person-titles'})
-            names2= [item.string for item in name]
-            jobtitle2 = [item.div.string for item in jobtitle]
-        umsi_titles.update(dict(zip(names2, jobtitle2)))
+        for item in soup: #iterating through the variable soup
+            name = soup.div.div.findAll('h2', {'class': None, 'id': None}) #searching through the soup for the name
+            jobtitle = soup.div.div.findAll('div', {'class': 'field-name-field-person-titles'}) #searching through the soup for job titles
+            names2= [item.string for item in name] #getting names and turning them into a string
+            jobtitle2 = [item.div.string for item in jobtitle] #getting jobtitles and turning them into a string
+        umsi_titles.update(dict(zip(names2, jobtitle2))) #updating the dictionary and zipping the name and job titles string into it
 
-    for item in range(13):
-        peopledict(umsi_titles, base_umsi_url+str(item))
-    return umsi_titles
+    for item in range(13): #creating a loop to run 13 times 
+        peopledict(umsi_titles, base_umsi_url+str(item)) #looping through the peopledict function 13 times to access each new page
+    return umsi_titles #returning the dictionary of names
 
 ## PART 3 (b) Define a function called num_students.
 ## INPUT: The dictionary from get_umsi_data().
 ## OUTPUT: Return number of PhD students in the data.  (Don't forget, I may change the input data)
-def num_students(data):
-    PhDstudents = 0
-    for student in data:
-        if 'PhD' in data[student]:
-            PhDstudents+=1
-    return PhDstudents
+def num_students(data): 
+    PhDstudents = 0 #initializing accumulator variable
+    for student in data: #looping through the data
+        if 'PhD' in data[student]: #iterating items in sequence
+            PhDstudents+=1 #updating accumulator variable 
+    return PhDstudents #returning PhDstudents
 
 
 
